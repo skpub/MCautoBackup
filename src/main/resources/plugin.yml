@@ -1,0 +1,4 @@
+name: MCbkup
+version: '${project.version}'
+main: com.kaito.mcbkup.MCbkup
+api-version: 1.19

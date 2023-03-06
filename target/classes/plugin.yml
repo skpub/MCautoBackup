@@ -1,0 +1,4 @@
+name: MCbkup
+version: '1.0-SNAPSHOT'
+main: com.kaito.mcbkup.MCbkup
+api-version: 1.19
