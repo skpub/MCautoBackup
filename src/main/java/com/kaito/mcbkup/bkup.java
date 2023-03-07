@@ -25,25 +25,29 @@ public class bkup {
             String current_dir = Paths.get("")
                     .toAbsolutePath()
                     .toString();
+
+            MCbkup.save_all();
             try {
-                Runtime.getRuntime().exec(
+                Process p = Runtime.getRuntime().exec(
                         "robocopy "
                                 + current_dir
                                 + " "
                                 + this.dest
-                                + "/E /B /COPYALL /NP /R:3 /MIR"
+                                + " /E /B /COPYALL /NP /R:3 /MIR"
                 );
+                p.waitFor();
             } catch (Exception e) {
                 System.out.println(e);
             }
 
             try { // reset archive attribute.
-                Runtime.getRuntime().exec(
+                Process p = Runtime.getRuntime().exec(
                         "attrib -A "
                                 + current_dir
-                                + "\\*"
+                                + "\\* "
                                 + "/S"
                 );
+                p.waitFor();
             } catch (Exception e) {
                 System.out.println(e);
             }
@@ -55,14 +59,6 @@ public class bkup {
         };
         this.timer = new Timer();
         timer.schedule(task, this.interval, this.interval*1000*60);
-
-        String command = "notepad.exe";
-        try {
-            Process p = Runtime.getRuntime().exec(command);
-            p.waitFor();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
     }
 }
 

@@ -1,6 +1,10 @@
 package com.kaito.mcbkup;
 
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.Listener;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -17,6 +21,13 @@ public final class MCbkup extends JavaPlugin {
     private static Properties setting;
     @Override
     public void onEnable() {
+        getServer().getPluginManager().registerEvents(new bkup_aftersave(), this);
+
+        getServer()
+            .dispatchCommand(
+                Bukkit.getConsoleSender(),
+                "save-all"
+            );
         if ("\\".equals(System.getProperty("file.separator"))) {
             getLogger().info("OS detected. (Windows)");
             if (Files.exists(Paths.get(data_file_path))) { // initialize (If you are using this plugin for the first time)
@@ -74,14 +85,20 @@ public final class MCbkup extends JavaPlugin {
                         .toString()
         );
 
-        bkup process = new bkup(
-            Integer.parseInt(n),
-            Integer.parseInt(interval),
-            dest,
-            Boolean.parseBoolean(firsttime)
+//        bkup process = new bkup(
+//            Integer.parseInt(n),
+//            Integer.parseInt(interval),
+//            dest,
+//            Boolean.parseBoolean(firsttime)
+//        );
+    }
+    public static void save_all() {
+        Bukkit.getServer()
+                .dispatchCommand(
+                        Bukkit.getConsoleSender(),
+                        "save-all"
         );
     }
-
     @Override
     public void onDisable() {
         getLogger().info("プラグインが死亡");
