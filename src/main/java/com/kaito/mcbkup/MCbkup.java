@@ -18,11 +18,10 @@ import java.util.Properties;
 
 public final class MCbkup extends JavaPlugin {
     private static final String data_file_path = "MCbkup.properties";
-    private static Properties setting;
+    static Properties setting;
+
     @Override
     public void onEnable() {
-        getServer().getPluginManager().registerEvents(new bkup_aftersave(), this);
-
         getServer()
             .dispatchCommand(
                 Bukkit.getConsoleSender(),
@@ -36,7 +35,10 @@ public final class MCbkup extends JavaPlugin {
                 getLogger().info("No configuration file was found.");
                 getLogger().info("a default configuration file is created.");
                 setting = new Properties();
-                setting.setProperty("destination", "\"..\\BKUP\"");
+
+                String dest_dir = Paths.get("..\\BKUP").normalize().toString();
+                getLogger().info("dest_dir: " + dest_dir);
+                setting.setProperty("destination", dest_dir);
                 setting.setProperty("N(generation)", "20");
                 setting.setProperty("interval(min)", "5");
                 setting.setProperty("firsttime", "true");
@@ -67,10 +69,12 @@ public final class MCbkup extends JavaPlugin {
                 System.out.println(e);
             }
         }
-        String n            = setting.getProperty("N");
-        String interval     = setting.getProperty("interval");
-        String dest         = setting.getProperty("dest");
+        String dest         = setting.getProperty("destination");
+        String n            = setting.getProperty("N(generation)");
+        String interval     = setting.getProperty("interval(min)");
         String firsttime    = setting.getProperty("firsttime");
+
+        getServer().getPluginManager().registerEvents(new bkup_aftersave(), this);
 
         getLogger().info("##### backup setting #####");
         getLogger().info("destination:  "+dest);
