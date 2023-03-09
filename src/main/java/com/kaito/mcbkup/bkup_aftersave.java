@@ -5,12 +5,12 @@ import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.InputStream;
-
-
+import java.io.InputStreamReader;
 public class bkup_aftersave implements Listener {
     @EventHandler
     public void onWorldSave(WorldSaveEvent event) {
@@ -30,8 +30,8 @@ public class bkup_aftersave implements Listener {
             ))
         {
             try {
-                Process p = Runtime.getRuntime().exec( new String[]{
-                        "robocopy "
+                String[] command = new String[]{
+                                "robocopy "
                                 , Paths.get("").toAbsolutePath().toString()
                                 + "\\"
                                 + worldname
@@ -39,10 +39,29 @@ public class bkup_aftersave implements Listener {
                                 + "\\"
                                 + worldname
                                 , "/MIR"
-                });
+                                , "/XF"
+                                , "session.lock"};
+                for (String str: command) {
+                    System.out.print(str + " ");
+                }
+                System.out.println(
+                    "current_path: " + Paths.get("").toAbsolutePath()
+                );
+                System.out.println();
+                Process p = Runtime.getRuntime().exec(command);
                 p.waitFor();
-                 InputStream is = p.getInputStream();
-                 Bukkit.getLogger().info(is.toString());
+
+                InputStream es = p.getInputStream();
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(es)
+                );
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                    System.out.println(line.toString());
+                }
+                br.close();
             } catch (Exception e) {
                 System.out.println(e);
             }
