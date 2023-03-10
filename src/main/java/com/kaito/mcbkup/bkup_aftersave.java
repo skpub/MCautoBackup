@@ -5,12 +5,17 @@ import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
 
+import java.nio.file.Path;
+import java.util.Date;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
 public class bkup_aftersave implements Listener {
     @EventHandler
     public void onWorldSave(WorldSaveEvent event) {
@@ -23,54 +28,71 @@ public class bkup_aftersave implements Listener {
                 System.out.println(e);
             }
         }
-        if (!Files.exists(
-                Paths.get(MCbkup.setting.getProperty("destination")
-                    + "\\"
-                    + worldname)
-            ))
+        String source_world = Paths.get("").toAbsolutePath().toString()
+                + "\\" + worldname;
+        String dest_world = MCbkup.setting.getProperty("destination")
+                + "\\" + worldname;
+        String unixtime = String.valueOf(System.currentTimeMillis());
+
+        if (Files.exists(
+                Paths.get(dest_world)))
         {
             try {
-                String[] command = new String[]{
-                                "robocopy "
-                                , Paths.get("").toAbsolutePath().toString()
-                                + "\\"
-                                + worldname
-                                , MCbkup.setting.getProperty("destination")
-                                + "\\"
-                                + worldname
-                                , "/MIR"
-                                , "/XF"
-                                , "session.lock"};
-                for (String str: command) {
-                    System.out.print(str + " ");
-                }
-                System.out.println(
-                    "current_path: " + Paths.get("").toAbsolutePath()
-                );
-                System.out.println();
+                String[] command = new String[] {
+                    "robocopy"
+                        , source_world
+                        , dest_world + "\\" + worldname + "_" + unixtime
+                        , "/MIR"
+                        , "/M"
+                        , "/XF"
+                        , "session.lock"
+                };
                 Process p = Runtime.getRuntime().exec(command);
                 p.waitFor();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } else {
+            try {
+                Files.createDirectory(Paths.get(dest_world));
+                String[] command = new String[]{
+                    "robocopy "
+                        , source_world
+                        , dest_world + "\\" + worldname + "_" + unixtime + "_FULL_"
+                        , "/MIR"
+                        , "/XF"
+                        , "session.lock"
+                };
+                Process p = Runtime.getRuntime().exec(command);
+                p.waitFor();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
 
-                InputStream es = p.getInputStream();
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(es)
-                );
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line);
-                    System.out.println(line.toString());
-                }
-                br.close();
+            try { // reset attribute.
+                String[] command = new String[]{
+                    "attrib"
+                        , "-A"
+                        , source_world + "\\" + "*"
+                        , "/S"
+                };
+                Process p = Runtime.getRuntime().exec(command);
+                p.waitFor();
             } catch (Exception e) {
                 System.out.println(e);
             }
         }
-//        try {
-//            Process p = Runtime.getRuntime().exec("");
-//            p.waitFor();
-//        } catch (Exception e) {
-//            System.out.println(e);
-//        }
+    }
+    public static void printInputStream(InputStream is) throws IOException {
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(is)
+        );
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+            System.out.println(line.toString());
+        }
+        br.close();
     }
 }
