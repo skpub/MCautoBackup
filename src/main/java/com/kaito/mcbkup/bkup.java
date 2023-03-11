@@ -37,7 +37,7 @@ public class bkup {
                 );
                 p.waitFor();
             } catch (Exception e) {
-                System.out.println(e);
+                throw new RuntimeException(e);
             }
 
             try { // reset archive attribute.
@@ -49,7 +49,7 @@ public class bkup {
                 );
                 p.waitFor();
             } catch (Exception e) {
-                System.out.println(e);
+                throw new RuntimeException(e);
             }
         }
 
