@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="MCbkup" target="1.8" />
+      <module name="MCbkup" target="9" />
     </bytecodeTargetLevel>
   </component>
 </project>
