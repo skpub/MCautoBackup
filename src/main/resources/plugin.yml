@@ -1,0 +1,4 @@
+name: MCBK
+version: '${version}'
+main: org.kaito.mcbk.MCBK
+api-version: 1.19
