@@ -1,0 +1,4 @@
+name: MCautoBackup
+version: '${version}'
+main: com.skpub.mcautobackup.MCautoBackup
+api-version: 1.20
